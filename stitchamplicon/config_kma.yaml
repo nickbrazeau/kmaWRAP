@@ -1,0 +1,22 @@
+# samples and in/out paths
+smpls: <path>
+fastq: <path>
+scratch:  <path>
+
+
+
+# configurations for trimmomatic
+Forward: <path>
+ForwardReverseComplement: <path>
+Reverse: <path>
+ReverseReverseComplement: <path>
+cutmin_trimmed_length: <numeric>
+
+
+# configurations for flash
+stitch_min_overlap: <numeric>
+stitch_max_overlap: <numeric>
+
+# configurations for kma
+perc_identity: <numeric>
+indexeddatabase: <path>
