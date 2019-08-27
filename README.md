@@ -39,3 +39,7 @@ bash launch_kmawrap.sh
 ### Error Handling
 If you hit a permissions issue, make sure to the files are executable `chmod u+x`.   
 Make sure your indexed database path is <path_to_index><name>
+  
+  
+##### Acknowledgements
+Pipelines were inspired by Andrew Morgan's better usage of snakemake! 
