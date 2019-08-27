@@ -35,7 +35,8 @@ rule all:
 # Note, flags are: https://bitbucket.org/genomicepidemiology/kma/src/master/
 rule run_kma:
 	input:
-		smplcut = os.path.join(SCRROOT, "{sample}.trimmed.fastq.gz")
+		trimmedread1 =  os.path.join(SCRROOT, "intermedfastq", "{sample}_R1.trimmed.fastq.gz"),
+		trimmedread2 =  os.path.join(SCRROOT, "intermedfastq", "{sample}_R2.trimmed.fastq.gz")
 	params:
 		identity = config["perc_identity"],
 		database = config["indexeddatabase"],
@@ -44,10 +45,10 @@ rule run_kma:
 		kmalog = os.path.join(SCRROOT, "{sample}_kma_results", "{sample}.kmalog")
 	shell:
 		r"""
-		kma -int -bc90 -1t1 \
+		kma -bc90 -1t1 \
 		-ID {params.identity} \
 		-t_db {params.database} \
-		{input.smplmergecut} \
+		-int {input.trimmedread1} {input.trimmedread2} \
 		-o {params.out} \
 		2> {output.kmalog}
 		"""
@@ -62,8 +63,9 @@ rule trim_and_align:
 		read2 = os.path.join(SEQROOT, "{sample}_R2.fastq.gz"),
 		adapters = config["ADAPTERS"],
 	output:
-		cuttrimlog = os.path.join(SCRROOT, "{sample}_trimming.log"),
-		trimmed =  os.path.join(SCRROOT, "{sample}.trimmed.fastq.gz"),
+		cuttrimlog = os.path.join(SCRROOT, "intermedfastq", "{sample}_trimming.log"),
+		trimmedread1 =  os.path.join(SCRROOT, "intermedfastq", "{sample}_R1.trimmed.fastq.gz"),
+		trimmedread2 =  os.path.join(SCRROOT, "intermedfastq", "{sample}_R2.trimmed.fastq.gz")
 	params:
 		cutminlength = config["cutmin_trimmed_length"]
 	shell:
@@ -73,8 +75,9 @@ rule trim_and_align:
 			-A file:{input.adapters} \
 			-m {params.cutminlength} \
 			{input.read1} {input.read2} \
-			2>{output.cuttrimlog} | \
-			gzip -c {output.trimmed}
+			-o {output.trimmedread1} \
+			-p {output.trimmedread2}
+			2>{output.cuttrimlog}
 		"""
 
 # note, --interleaved flag uses both interleaved input and output

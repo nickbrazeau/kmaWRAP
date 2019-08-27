@@ -35,19 +35,19 @@ rule all:
 # Note, flags are: https://bitbucket.org/genomicepidemiology/kma/src/master/
 rule run_kma:
 	input:
-		smplmergecut = os.path.join(SCRROOT, "{sample}.trimmed.merged.fastq.gz")
+		smplmergecut = os.path.join(SCRROOT, "intermedfastq", "{sample}.trimmed.merged.fastq.gz")
 	params:
 		identity = config["perc_identity"],
 		database = config["indexeddatabase"],
-		out = os.path.join(SCRROOT, "{sample}")
+		out = os.path.join(SCRROOT, "{sample}_kma_results", "{sample}")
 	output:
 		kmalog = os.path.join(SCRROOT, "{sample}_kma_results", "{sample}.kmalog")
 	shell:
 		r"""
-		kma -int -bc90 -1t1 \
+		kma -bc90 -1t1 \
 		-ID {params.identity} \
 		-t_db {params.database} \
-		{input.smplmergecut} \
+		-i {input.smplmergecut} \
 		-o {params.out} \
 		2> {output.kmalog}
 		"""
@@ -55,18 +55,18 @@ rule run_kma:
 
 rule stitch_trimmed:
 	input:
-		trimmed =  os.path.join(SCRROOT, "{sample}.trimmed.fastq.gz")
+		trimmed =  os.path.join(SCRROOT, "intermedfastq", "{sample}.trimmed.fastq.gz")
 	params:
 		stitchminoverlap = config["stitch_min_overlap"],
 		stitchmaxoverlap = config["stitch_max_overlap"]
 	output:
-		flashstitchlog =  os.path.join(SCRROOT, "{sample}_stitching.log"),
-		smplmergecut = os.path.join(SCRROOT, "{sample}.trimmed.merged.fastq.gz")
+		flashstitchlog =  os.path.join(SCRROOT, "intermedfastq", "{sample}_stitching.log"),
+		smplmergecut = os.path.join(SCRROOT, "intermedfastq", "{sample}.trimmed.merged.fastq.gz")
 	shell:
 		r"""
 		flash --interleaved \
-			--min-overlap {params.stitchminoverlap}
-			--max-overlap {params.stitchmaxoverlap}
+			--min-overlap {params.stitchminoverlap} \
+			--max-overlap {params.stitchmaxoverlap} \
 			--to-stdout \
 			{input.trimmed} \
 			2>{output.flashstitchlog} | \
@@ -87,8 +87,8 @@ rule trim_and_align:
 		Rev = config["Reverse"],
 		RevRC = config["ReverseReverseComplement"]
 	output:
-		cuttrimlog = os.path.join(SCRROOT, "{sample}_trimming.log"),
-		trimmed =  os.path.join(SCRROOT, "{sample}.trimmed.fastq.gz"),
+		cuttrimlog = os.path.join(SCRROOT, "intermedfastq", "{sample}_trimming.log"),
+		trimmed =  os.path.join(SCRROOT, "intermedfastq", "{sample}.trimmed.fastq.gz"),
 	params:
 		cutminlength = config["cutmin_trimmed_length"]
 	shell:
@@ -100,8 +100,8 @@ rule trim_and_align:
 			-A file:{input.FwdRC} \
 			-m {params.cutminlength} \
 			{input.read1} {input.read2} \
-			2>{output.cuttrimlog} | \
-			gzip -c {output.trimmed}
+			-o {output.trimmed} \
+			2>{output.cuttrimlog}
 		"""
 
 # note, --interleaved flag uses both interleaved input and output
