@@ -39,6 +39,10 @@ bash launch_kmawrap.sh
 ### Error Handling
 If you hit a permissions issue, make sure to the files are executable `chmod u+x`.   
 Make sure your indexed database path is <path_to_index><name>
+  
+  
+##### Acknowledgements
+Pipelines were inspired by Andrew Morgan's better usage of snakemake! 
 
 #### Notes to Future-Self or Other Users
 You could consider making the cutadapt step more or less "strict" depending on the `a/A, g/G, b/B` flags as well as the `--pair-filter=both --discard-untrimmed` flags depending on amount of expected "read-through".
