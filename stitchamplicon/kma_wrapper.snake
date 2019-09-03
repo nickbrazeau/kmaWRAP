@@ -25,7 +25,7 @@ SEQROOT = config["fastq"]
 SCRROOT = config["scratch"]
 
 ## set final target
-final_target = [ os.path.join(SCRROOT, "{}_kma_results".format(s), "{}.kmalog".format(s)) for s in samples ]
+final_target = [ os.path.join(SCRROOT, "kmalogs", "{}.kmalog".format(s)) for s in samples ]
 
 rule all:
 	input: final_target
@@ -41,7 +41,7 @@ rule run_kma:
 		database = config["indexeddatabase"],
 		out = os.path.join(SCRROOT, "{sample}_kma_results", "{sample}")
 	output:
-		kmalog = os.path.join(SCRROOT, "{sample}_kma_results", "{sample}.kmalog")
+		kmalog = os.path.join(SCRROOT, "kmalogs", "{sample}.kmalog")
 	shell:
 		r"""
 		kma -bc90 -1t1 \
