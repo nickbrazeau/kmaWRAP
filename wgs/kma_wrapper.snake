@@ -38,17 +38,17 @@ rule run_kma:
 		trimmedread =  os.path.join(SCRROOT, "intermedfastq", "{sample}.trimmed.fastq.gz")
 	params:
 		identity = config["perc_identity"],
-		database = config["indexeddatabase"],
-		out = os.path.join(SCRROOT, "{sample}")
+		database = config["indexeddatabase"]
 	output:
-		kmalog = os.path.join(SCRROOT, "{sample}.kmalog")
+		kmalog = os.path.join(SCRROOT, "{sample}.kmalog"),
+		out = os.path.join(SCRROOT, "{sample}")
 	shell:
 		r"""
 		kma -bc90 -1t1 -Mt1 1 \
 		-ID {params.identity} \
 		-t_db {params.database} \
 		-int {input.trimmedread} \
-		-o {params.out} \
+		-o {output.out} \
 		2> {output.kmalog}
 		"""
 
